@@ -11,7 +11,6 @@ function App() {
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("masuk");
   const [editIndex, setEditIndex] = useState(null);
-  const [sortOrder, setSortOrder] = useState("desc");
 
   // state laporan bulanan
   const [selectedMonth, setSelectedMonth] = useState(
@@ -60,21 +59,18 @@ function App() {
     setEditIndex(index);
   };
 
-  const sortedTransactions = [...transactions].sort((a, b) => {
-    if (sortOrder === "asc") {
-      return new Date(a.date) - new Date(b.date);
-    } else {
-      return new Date(b.date) - new Date(a.date);
-    }
-  });
+  // langsung sort terbaru ke lama (default)
+const sortedTransactions = [...transactions].sort(
+  (a, b) => new Date(a.date) - new Date(b.date)
+);
 
-  const filteredTransactions = sortedTransactions.filter((t) => {
-    const tDate = new Date(t.date);
-    return (
-      tDate.getMonth() + 1 === selectedMonth &&
-      tDate.getFullYear() === selectedYear
-    );
-  });
+const filteredTransactions = sortedTransactions.filter((t) => {
+  const tDate = new Date(t.date);
+  return (
+    tDate.getMonth() + 1 === selectedMonth &&
+    tDate.getFullYear() === selectedYear
+  );
+});
 
   // total
   const totalMasuk = filteredTransactions
@@ -167,73 +163,72 @@ function App() {
         </button>
       </div>
 
-{/* Filter laporan */}
-<div
-  style={{
-    marginBottom: "20px",
-    textAlign: "center",
-    display: "flex",
-    justifyContent: "center",
-    gap: "15px",
-    flexWrap: "wrap",
-    alignItems: "center", // 👈 biar rata tengah secara vertikal
-  }}
->
-  <div style={{ display: "flex", alignItems: "center" }}>
-    <label
-      style={{
-        fontSize: "16px",
-        fontWeight: "bold",
-        marginRight: "6px",
-      }}
-    >
-      Bulan:
-    </label>
-    <select
-      value={selectedMonth}
-      onChange={(e) => setSelectedMonth(Number(e.target.value))}
-      style={{
-        padding: "10px",
-        fontSize: "16px",
-        borderRadius: "6px",
-      }}
-    >
-      {[...Array(12)].map((_, i) => (
-        <option key={i + 1} value={i + 1}>
-          {new Date(0, i).toLocaleString("id-ID", { month: "long" })}
-        </option>
-      ))}
-    </select>
-  </div>
+      {/* Filter laporan */}
+      <div
+        style={{
+          marginBottom: "20px",
+          textAlign: "center",
+          display: "flex",
+          justifyContent: "center",
+          gap: "15px",
+          flexWrap: "wrap",
+          alignItems: "center",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <label
+            style={{
+              fontSize: "16px",
+              fontWeight: "bold",
+              marginRight: "6px",
+            }}
+          >
+            Bulan:
+          </label>
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+            style={{
+              padding: "10px",
+              fontSize: "16px",
+              borderRadius: "6px",
+            }}
+          >
+            {[...Array(12)].map((_, i) => (
+              <option key={i + 1} value={i + 1}>
+                {new Date(0, i).toLocaleString("id-ID", { month: "long" })}
+              </option>
+            ))}
+          </select>
+        </div>
 
-  <div style={{ display: "flex", alignItems: "center" }}>
-    <label
-      style={{
-        fontSize: "16px",
-        fontWeight: "bold",
-        marginRight: "6px",
-      }}
-    >
-      Tahun:
-    </label>
-    <select
-      value={selectedYear}
-      onChange={(e) => setSelectedYear(Number(e.target.value))}
-      style={{
-        padding: "10px",
-        fontSize: "16px",
-        borderRadius: "6px",
-      }}
-    >
-      {[2024, 2025, 2026].map((year) => (
-        <option key={year} value={year}>
-          {year}
-        </option>
-      ))}
-    </select>
-  </div>
-</div>
-
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <label
+            style={{
+              fontSize: "16px",
+              fontWeight: "bold",
+              marginRight: "6px",
+            }}
+          >
+            Tahun:
+          </label>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            style={{
+              padding: "10px",
+              fontSize: "16px",
+              borderRadius: "6px",
+            }}
+          >
+            {[2024, 2025, 2026].map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       {/* Ringkasan */}
       <div
@@ -245,7 +240,7 @@ function App() {
         }}
       >
         <h3>
-          Laporan Bulan {" "}
+          Laporan Bulan{" "}
           {new Date(0, selectedMonth - 1).toLocaleString("id-ID", {
             month: "long",
           })}{" "}
@@ -260,40 +255,6 @@ function App() {
         <p>
           <strong>Sisa Uang:</strong> Rp{saldo.toLocaleString()}
         </p>
-      </div>
-
-      {/* Sort */}
-      <div
-        style={{
-          marginBottom: "20px",
-          textAlign: "center",
-          display: "flex",
-          justifyContent: "center",
-          gap: "6px",
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
-      >
-        <label
-          style={{
-            fontSize: "16px",
-            fontWeight: "bold",
-          }}
-        >
-          Urutkan:
-        </label>
-        <select
-          value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value)}
-          style={{
-            padding: "10px",
-            fontSize: "16px",
-            borderRadius: "6px",
-          }}
-        >
-          <option value="desc">Terbaru ke Terlama</option>
-          <option value="asc">Terlama ke Terbaru</option>
-        </select>
       </div>
 
       {/* Daftar transaksi */}
