@@ -25,24 +25,31 @@ function App() {
   const addTransaction = () => {
     if (!description || !amount) return;
 
-    const newTransaction = {
-      description,
-      amount: parseFloat(amount),
-      type,
-      date: new Date().toISOString(),
-    };
-
     if (editIndex !== null) {
+      // update transaksi tanpa mengubah date
       const updated = [...transactions];
-      updated[editIndex] = newTransaction;
+      updated[editIndex] = {
+        ...updated[editIndex], // ambil data lama termasuk date
+        description,
+        amount: parseFloat(amount),
+        type,
+      };
       setTransactions(updated);
       setEditIndex(null);
     } else {
+      // tambah transaksi baru
+      const newTransaction = {
+        description,
+        amount: parseFloat(amount),
+        type,
+        date: new Date().toISOString(),
+      };
       setTransactions([...transactions, newTransaction]);
     }
 
     setDescription("");
     setAmount("");
+    setType("masuk");
   };
 
   const deleteTransaction = (index) => {
@@ -59,18 +66,18 @@ function App() {
     setEditIndex(index);
   };
 
-  // langsung sort terbaru ke lama (default)
-const sortedTransactions = [...transactions].sort(
-  (a, b) => new Date(a.date) - new Date(b.date)
-);
-
-const filteredTransactions = sortedTransactions.filter((t) => {
-  const tDate = new Date(t.date);
-  return (
-    tDate.getMonth() + 1 === selectedMonth &&
-    tDate.getFullYear() === selectedYear
+  // urutkan dari lama -> baru
+  const sortedTransactions = [...transactions].sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
   );
-});
+
+  const filteredTransactions = sortedTransactions.filter((t) => {
+    const tDate = new Date(t.date);
+    return (
+      tDate.getMonth() + 1 === selectedMonth &&
+      tDate.getFullYear() === selectedYear
+    );
+  });
 
   // total
   const totalMasuk = filteredTransactions
